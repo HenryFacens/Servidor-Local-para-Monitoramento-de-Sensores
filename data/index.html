@@ -1,0 +1,206 @@
+<!DOCTYPE HTML><html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Language" content="pt-br">
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <style>
+    body {
+      min-width: 310px;
+    	max-width: 800px;
+    	height: 400px;
+      background-color: rgb(202, 188, 188);
+    }
+    h2 {
+      font-family: Arial;
+      font-size: 2.5rem;
+      text-align: center;
+      position: absolute;
+      top: 7vw;
+      left: 20vw;
+    }
+    .facens{
+      background-size: auto;
+      background-color: rgb(133, 110, 110);
+      border-style: solid;
+      border-color: purple;
+      border-radius: 1vw;
+      margin-top: 30px;
+      position: absolute;
+      left: 30px;
+      width: 200px;
+      
+
+    }
+    .container{
+      border-style: solid;
+      border-color: purple;
+      border-radius: 10vw;
+      position: absolute;
+      width: 50vw;
+      top: 13vw;
+      left: 10vw;
+    }
+    .Lmin{
+
+      font-family: Arial;
+      position: absolute;
+      top: 13vw; left: 1vw;
+      font-weight: bold;
+      border-radius: 10px;
+      border-color: black;
+      border-style: solid;
+    }
+    .vazao{
+
+      position: absolute;
+      top: 15vw; left: 1vw;
+      font-weight: bold;
+      border-color: black;
+
+    }
+    .mr_vz1{
+      
+      position: absolute;
+      top: 20vw; left: 1vw;
+      font-weight: bold;
+
+
+    }
+    .max-vz2{
+
+      border-radius: 10px;
+      border-color: black;
+      border-style: solid;
+      font-weight: bold;
+      font-family: Arial;
+      position: absolute;
+      top: 18vw; left: 1vw;
+
+    }
+
+
+    
+@media screen and (max-width: 1000px) {
+  
+
+
+  .container{
+
+    width: 400px;
+    height: 200px;
+    top: 60vw;
+    left: 4px;
+
+  }
+
+  h2{
+    font-size: large;
+    top: 45vw;
+    left: 20vw;
+    width:auto;
+
+  }
+
+  .Lmin{
+
+    top: 120vw; left: 27vw;
+
+  }
+
+
+  .vazao{
+
+    top: 130vw; left: 36vw;
+
+  }
+
+  .facens{
+
+    left: 25vw;
+
+  }
+  .mr_vz1{
+
+    top: 150vw; left: 36vw;
+
+  }
+  .max-vz2{
+
+    top: 140vw; left: 30vw;
+
+  }
+
+}
+
+  </style>
+<logo class="logo">
+  <img src="https://facens.br/wp-content/uploads/2021/03/logo-f-b.png" class="facens">
+</logo>
+</head>
+<body>
+  <p1 class="Lmin">
+    Vazao atual ( L/min )
+  </p1>
+  <span id="zazao" class="vazao">vazao</span>
+  <p1 class="max-vz2">
+    Vazao Maxima
+  </p1>
+  <span id="mr_vz" class="mr_vz1">max-vz</span>
+  <h2>Sensor de Fluxo de Vazao</h2>
+  <div id="chart-vazao" class="container"></div>
+</body>
+<script>
+var chartT = new Highcharts.Chart({
+  chart:{ renderTo : 'chart-vazao' },
+  title: { text: 'Vazao ( L/min )' },
+  series: [{
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: false,
+      dataLabels: { enabled: true }
+    },
+    series: { color: '#008b8b' }
+  },
+  xAxis: { type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    title: { text: 'Vazão' }
+  },
+  credits: { enabled: false }
+});
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime(),
+          y = parseFloat(this.responseText);
+      //console.log(this.responseText);2
+      if(chartT.series[0].data.length > 40) {
+        chartT.series[0].addPoint([x, y], true, true, true);
+        document.getElementById("zazao").innerHTML = this.responseText;
+      } else {
+        chartT.series[0].addPoint([x, y], true, false, true);
+        document.getElementById("zazao").innerHTML = this.responseText;
+      }
+    }
+  };
+  xhttp.open("GET", "/vazao", true);
+  xhttp.send();
+}, 3000 ) ;
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("mr_vz").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/mr_num", true);
+  xhttp.send();
+}, 30000 ) ;
+
+</script>
+</html>
